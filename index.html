@@ -1,0 +1,126 @@
+<DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>tss</title>
+		<style>
+			*{
+				margin: 0px;
+				padding 0px;
+			}
+			#header{
+				width:50px;
+				height:100%;
+				position:fixed;
+				background-color:#0e90d2;
+			}
+			#form{
+				width:600px;
+				height:600px;
+				position:relative;
+				background-color:black;
+				margin:auto;
+			}
+			#ground{
+				width: 580px;
+				height: 580px;
+				background-color: grey;
+				border: 10px solid;
+			}
+			.snake-body{
+				width:10px;
+				height:10px;
+				background-color:red;
+				position:absolute;
+				padding-color:white;
+			}
+			#food{
+				width:10px;
+				height:10px;
+				background-color:yellow;
+				position:absolute;
+			}
+		</style>
+		<script>
+			var fk=new Array();
+			var sk=new Array();
+			var keycold=true;
+			window.onload=function(){
+				var dirX=1,dirY=0,l=-1,fdX,fdY;
+				var fm=document.getElementById("form");
+				var fH=parseInt(getComputedStyle(fm)["height"])/10;
+				var fW=parseInt(getComputedStyle(fm)["width"])/10;
+				for(var i=0;i<=fH;i++){
+					fk[i]=new Array();
+					for(var j=0;j<=fW;j++){
+						if(i==0||j==0||i>=fH-1||j>=fW-1) fk[i][j]=true;
+						else fk[i][j]=false;
+					}
+				}
+				function createSnake(pX,pY){
+					nsb=document.createElement("div");
+					nsb.className="snake-body";
+					nsb.style.left=pX*10+"px";
+					nsb.style.top=pY*10+"px";
+					fm.appendChild(nsb);
+					fk[pX][pY]=true;
+					sk.push(nsb);
+				}
+				function createFood(){
+					fdX=Math.floor(Math.random()*fW);
+					fdY=Math.floor(Math.random()*fH);
+					while(fk[fdX][fdY]){
+						fdX=Math.floor(Math.random()*fW);
+						fdY=Math.floor(Math.random()*fH);
+					}
+					fd=document.getElementById("food");
+					fd.style.left=fdX*10+"px";
+					fd.style.top=fdY*10+"px";
+				}
+				function remove(tX,tY){
+					fk[tX][tY]=true;
+					fk[sk[sk.length-1].offsetLeft/10][sk[sk.length-1].offsetTop/10]=false;
+					sk[sk.length-1].style.left=tX*10+"px";
+					sk[sk.length-1].style.top=tY*10+"px";
+					sk.unshift(sk.pop());
+				}
+				createSnake(2,1);
+				createSnake(1,1);
+				createFood();
+				function die(){
+					clearInterval(timer);
+					alert("Game Over!");
+				}
+				function work(){
+					document.onkeydown=function(event){
+						if(keycold==false) return;
+						keycold=false;
+						switch(event.keyCode){
+							case 38:if(dirY==0){dirX=0;dirY=-1;}break;
+							case 39:if(dirX==0){dirX=1;dirY=0;}break;
+							case 40:if(dirY==0){dirX=0;dirY=1;}break;
+							case 37:if(dirX==0){dirX=-1;dirY=0;}break;
+						}
+					};
+					ttX=sk[0].offsetLeft/10+dirX;ttY=sk[0].offsetTop/10+dirY;
+					if(fk[ttX][ttY]==true){die();return;}
+					if(ttX==fdX&&ttY==fdY){
+						createSnake(ttX,ttY);
+						createFood();
+					}
+					remove(ttX,ttY);
+					keycold=true;
+				}
+				var timer=setInterval(work,10);
+			};
+		</script>
+	</head>
+	<body>
+		<div id="header"></div>
+		<div id="form">
+			<div id="ground">
+				<div id="food"></div>
+			</div>
+		</div>
+	<body>
+</html>
